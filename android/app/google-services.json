@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "928071065723",
+    "project_id": "heryfb-tgkuliah",
+    "storage_bucket": "heryfb-tgkuliah.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:928071065723:android:63d472057d882d22e082de",
+        "android_client_info": {
+          "package_name": "com.example.fbdb"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDFosDhHAQkuu2uTmh9mCoHIJxQloCM3MM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:928071065723:android:bdd9bb128fa58419e082de",
+        "android_client_info": {
+          "package_name": "com.example.flutter_to_do_list"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDFosDhHAQkuu2uTmh9mCoHIJxQloCM3MM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:928071065723:android:492f875e85899fcce082de",
+        "android_client_info": {
+          "package_name": "com.example.smt3finalpk"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDFosDhHAQkuu2uTmh9mCoHIJxQloCM3MM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
