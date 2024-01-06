@@ -21,7 +21,7 @@ class MainApp extends StatelessWidget {
         home: FutureBuilder(
           future: getdata(),
           builder: (context, snapshot) {
-            return Authage();
+            return Mainpage();
           },
         ) //Authgate(),
         );
@@ -41,25 +41,100 @@ class Mainpage extends StatefulWidget {
 }
 
 class Mainpage0 extends State<Mainpage> {
+  bool todoisdone = false;
   int selectedIndex = 0;
   int selectedIndex1 = 0;
   @override
   Widget build(BuildContext context) {
     Widget listitem = Padding(
-      padding: const EdgeInsets.all(1),
-      child: ListTile(
-        contentPadding: EdgeInsets.all(0),
-        title: Column(children: [
-          ListTile(
-            tileColor: Colors.lime,
-            title: Text("data"),
-          ),
-          ListTile(
-            tileColor: Colors.lime,
-            title: Text("data"),
-          )
-        ]),
-        tileColor: Colors.blue,
+      padding: const EdgeInsets.all(4),
+      child: NesContainer(
+        padding: EdgeInsets.all(4),
+        backgroundColor: Colors.transparent,
+        child: ListTile(
+          minVerticalPadding: 0,
+          contentPadding: EdgeInsets.all(0),
+          title: Column(children: [
+            ListTile(
+              tileColor: Colors.blue,
+              title: Column(children: [
+                ListTile(
+                  minVerticalPadding: 0,
+                  contentPadding: EdgeInsets.all(0),
+                  textColor: Colors.white,
+                  title: Text("Judul"),
+                ),
+                ListTile(
+                  minVerticalPadding: 0,
+                  tileColor: Colors.cyanAccent,
+                  subtitle: Text("Deskripsi"),
+                )
+              ]),
+            ),
+            ListTile(
+              shape: Border(top: BorderSide(width: 4)),
+              tileColor: Colors.blue,
+              trailing: Checkbox(
+                fillColor: MaterialStateProperty.resolveWith((states) {
+                  if (!states.contains(MaterialState.selected)) {
+                    return Colors.white;
+                  }
+                }),
+                tristate: true,
+                value: todoisdone,
+                onChanged: (value) {
+                  setState(() {
+                    if (value != null) {
+                      todoisdone = value;
+                    } else {
+                      todoisdone = false;
+                    }
+                  });
+                },
+              ),
+              leading: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    style: ButtonStyle(
+                        iconColor: MaterialStateProperty.resolveWith((states) {
+                      return Colors.white;
+                    }), backgroundColor:
+                            MaterialStateProperty.resolveWith((states) {
+                      return Colors.black45;
+                    }), shape: MaterialStateProperty.resolveWith((states) {
+                      return BeveledRectangleBorder();
+                    })),
+                    icon: Icon(Icons.mode_edit),
+                    color: Colors.white,
+                    tooltip: 'Edit',
+                    onPressed: () {},
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
+                    child: IconButton(
+                      style: ButtonStyle(iconColor:
+                          MaterialStateProperty.resolveWith((states) {
+                        return Colors.white;
+                      }), backgroundColor:
+                          MaterialStateProperty.resolveWith((states) {
+                        return Color.fromARGB(255, 155, 0, 0);
+                      }), shape: MaterialStateProperty.resolveWith((states) {
+                        return BeveledRectangleBorder();
+                      })),
+                      icon: Icon(Icons.delete),
+                      color: Colors.white,
+                      tooltip: 'Edit',
+                      onPressed: () {},
+                    ),
+                  )
+                ],
+              ),
+              title: Text("\$5000"),
+            )
+          ]),
+          tileColor: Colors.blue,
+        ),
       ),
     );
 
@@ -120,7 +195,7 @@ class Mainpage0 extends State<Mainpage> {
             )
           ],
         ),
-        body: ListView(padding: EdgeInsets.all(1), children: [
+        body: ListView(padding: EdgeInsets.all(4), children: [
           listitem,
           listitem,
           listitem,
@@ -195,7 +270,7 @@ class Mainpage0 extends State<Mainpage> {
                 Padding(
                   padding: const EdgeInsets.all(10),
                   child: NesButton(
-                    type: NesButtonType.primary,
+                    type: NesButtonType.success,
                     onPressed: () {
                       setState(() {
                         Todoform();
@@ -426,7 +501,8 @@ class Todoform0 extends State<Todoform> {
                     controller: _controllerOutlined1,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.assignment),
-                      suffixIcon: _ClearButton(controller: _controllerOutlined1),
+                      suffixIcon:
+                          _ClearButton(controller: _controllerOutlined1),
                       labelText: 'Deskripsi Todo',
                       hintText:
                           'PPB Daily Exam Where Attended online record on Tomorrow Sunday',
