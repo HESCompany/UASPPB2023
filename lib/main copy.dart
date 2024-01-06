@@ -21,7 +21,7 @@ class MainApp extends StatelessWidget {
         home: FutureBuilder(
           future: getdata(),
           builder: (context, snapshot) {
-            return Mainpage();
+            return Authage();
           },
         ) //Authgate(),
         );
@@ -48,7 +48,6 @@ class Mainpage0 extends State<Mainpage> {
     Widget listitem = Padding(
       padding: const EdgeInsets.all(1),
       child: ListTile(
-        
         contentPadding: EdgeInsets.all(0),
         title: Column(children: [
           ListTile(
@@ -133,80 +132,86 @@ class Mainpage0 extends State<Mainpage> {
           ),
         ]),
         floatingActionButton: Column(
-          verticalDirection:VerticalDirection.up,
+          verticalDirection: VerticalDirection.up,
           children: [
-          Focus(
-            autofocus: true,
-            child: NavigationBarTheme(
-              data: NavigationBarThemeData(
-                iconTheme: MaterialStateProperty.resolveWith<IconThemeData>(
-                  (Set<MaterialState> states) =>
-                      states.contains(MaterialState.selected)
-                          ? const IconThemeData(color: Colors.blueAccent)
-                          : const IconThemeData(color: Colors.white),
+            Focus(
+              autofocus: true,
+              child: NavigationBarTheme(
+                data: NavigationBarThemeData(
+                  iconTheme: MaterialStateProperty.resolveWith<IconThemeData>(
+                    (Set<MaterialState> states) =>
+                        states.contains(MaterialState.selected)
+                            ? const IconThemeData(color: Colors.blueAccent)
+                            : const IconThemeData(color: Colors.white),
+                  ),
+                  labelTextStyle: MaterialStateProperty.resolveWith<TextStyle>(
+                    (Set<MaterialState> states) =>
+                        const TextStyle(color: Colors.white),
+                  ),
                 ),
-                labelTextStyle: MaterialStateProperty.resolveWith<TextStyle>(
-                  (Set<MaterialState> states) =>
-                      const TextStyle(color: Colors.white),
-                ),
-              ),
-              child: NavigationBar(
-                indicatorShape: BeveledRectangleBorder(),
-                backgroundColor: Colors.blueAccent,
-                indicatorColor: Colors.white,
-                selectedIndex: selectedIndex,
-                onDestinationSelected: (index) {
-                  setState(() {
-                    selectedIndex = index;
-                  });
-                },
-                destinations: [
-                  NavigationDestination(
-                    tooltip: '',
-                    icon: Icon(Icons.assignment),
-                    label: 'Todo',
-                    selectedIcon: Icon(Icons.edit_square),
-                  ),
-                  NavigationDestination(
-                    tooltip: '',
-                    icon: Icon(Icons.storefront_rounded),
-                    label: 'Shop',
-                    selectedIcon: Icon(Icons.shopping_bag_rounded),
-                  ),
-                  NavigationDestination(
-                    tooltip: '',
-                    icon: Icon(Icons.pets),
-                    label: 'Koleksi',
-                    selectedIcon: Icon(Icons.yard),
-                  ),
-                  NavigationDestination(
-                    tooltip: '',
-                    icon: Icon(Icons.account_circle_rounded),
-                    label: 'Saya',
-                    selectedIcon: Icon(Icons.account_box),
-                  )
-                ],
-              ),
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            mainAxisSize: MainAxisSize.max,
-            children: [Padding(
-              padding: const EdgeInsets.all(10),
-              child: NesButton(
-                type: NesButtonType.primary,
-                onPressed: () {},
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Icon(Icons.add),
+                child: NavigationBar(
+                  indicatorShape: BeveledRectangleBorder(),
+                  backgroundColor: Colors.blueAccent,
+                  indicatorColor: Colors.white,
+                  selectedIndex: selectedIndex,
+                  onDestinationSelected: (index) {
+                    setState(() {
+                      selectedIndex = index;
+                    });
+                  },
+                  destinations: [
+                    NavigationDestination(
+                      tooltip: '',
+                      icon: Icon(Icons.assignment),
+                      label: 'Todo',
+                      selectedIcon: Icon(Icons.edit_square),
+                    ),
+                    NavigationDestination(
+                      tooltip: '',
+                      icon: Icon(Icons.storefront_rounded),
+                      label: 'Shop',
+                      selectedIcon: Icon(Icons.shopping_bag_rounded),
+                    ),
+                    NavigationDestination(
+                      tooltip: '',
+                      icon: Icon(Icons.pets),
+                      label: 'Koleksi',
+                      selectedIcon: Icon(Icons.yard),
+                    ),
+                    NavigationDestination(
+                      tooltip: '',
+                      icon: Icon(Icons.account_circle_rounded),
+                      label: 'Saya',
+                      selectedIcon: Icon(Icons.account_box),
+                    )
                   ],
                 ),
               ),
-            )],
-          )
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: NesButton(
+                    type: NesButtonType.primary,
+                    onPressed: () {
+                      setState(() {
+                        Todoform();
+                      });
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Icon(Icons.add),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            )
           ],
         ));
   }
@@ -338,6 +343,7 @@ class Todoform0 extends State<Todoform> {
   bool value0 = false;
   bool value1 = true;
   final TextEditingController _controllerOutlined = TextEditingController();
+  final TextEditingController _controllerOutlined1 = TextEditingController();
   final MaterialStateProperty<Icon?> thumbIcon =
       MaterialStateProperty.resolveWith<Icon?>((states) {
     if (states.contains(MaterialState.selected)) {
@@ -368,21 +374,21 @@ class Todoform0 extends State<Todoform> {
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Padding(
-        padding: const EdgeInsets.fromLTRB(20,0,20,20),
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
         child: NesButton(
-                      type: NesButtonType.primary,
-                      onPressed: () {},
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Text(
-                            'Tambah',
-                            style: TextStyle(fontSize: 15),
-                          ),
-                        ],
-                      ),
-                    ),
+          type: NesButtonType.primary,
+          onPressed: () {},
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Text(
+                'Tambah',
+                style: TextStyle(fontSize: 15),
+              ),
+            ],
+          ),
+        ),
       ),
       appBar: AppBar(
         backgroundColor: Colors.blue,
@@ -417,13 +423,14 @@ class Todoform0 extends State<Todoform> {
                   ),
                   TextField(
                     maxLines: 10,
-                    controller: _controllerOutlined,
+                    controller: _controllerOutlined1,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.assignment),
-                      suffixIcon: _ClearButton(controller: _controllerOutlined),
+                      suffixIcon: _ClearButton(controller: _controllerOutlined1),
                       labelText: 'Deskripsi Todo',
-                      hintText: 'PPB Daily Exam Where Attended online record on Tomorrow Sunday',
-                      border:OutlineInputBorder(),
+                      hintText:
+                          'PPB Daily Exam Where Attended online record on Tomorrow Sunday',
+                      border: OutlineInputBorder(),
                       filled: true,
                     ),
                   ),
@@ -435,8 +442,15 @@ class Todoform0 extends State<Todoform> {
   }
 }
 
-class Lgnsec extends StatelessWidget {
+class Lgnsec extends StatefulWidget {
+  const Lgnsec({super.key});
+  @override
+  State<Lgnsec> createState() => Lgnsec0();
+}
+
+class Lgnsec0 extends State<Lgnsec> {
   final TextEditingController _controllerOutlined = TextEditingController();
+  final TextEditingController _controllerOutlined1 = TextEditingController();
   @override
   Widget build(BuildContext context) {
     //var appState = context.watch<Authage>();
@@ -459,10 +473,10 @@ class Lgnsec extends StatelessWidget {
               height: 5,
             ),
             TextField(
-              controller: _controllerOutlined,
+              controller: _controllerOutlined1,
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.enhanced_encryption),
-                suffixIcon: _ClearButton(controller: _controllerOutlined),
+                suffixIcon: _ClearButton(controller: _controllerOutlined1),
                 labelText: 'Password',
                 hintText: '*****************',
                 border: OutlineInputBorder(),
@@ -474,7 +488,11 @@ class Lgnsec extends StatelessWidget {
             ),
             NesButton(
               type: NesButtonType.primary,
-              onPressed: () {},
+              onPressed: () {
+                setState(() {
+                  Mainpage();
+                });
+              },
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
@@ -492,8 +510,16 @@ class Lgnsec extends StatelessWidget {
   }
 }
 
-class Regsec extends StatelessWidget {
+class Regsec extends StatefulWidget {
+  const Regsec({super.key});
+  @override
+  State<Regsec> createState() => Regsec0();
+}
+
+class Regsec0 extends State<Regsec> {
   final TextEditingController _controllerOutlined = TextEditingController();
+  final TextEditingController _controllerOutlined1 = TextEditingController();
+  final TextEditingController _controllerOutlined2 = TextEditingController();
   @override
   Widget build(BuildContext context) {
     //var appState = context.watch<Authage>();
@@ -516,10 +542,10 @@ class Regsec extends StatelessWidget {
               height: 5,
             ),
             TextField(
-              controller: _controllerOutlined,
+              controller: _controllerOutlined1,
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.lock_open),
-                suffixIcon: _ClearButton(controller: _controllerOutlined),
+                suffixIcon: _ClearButton(controller: _controllerOutlined1),
                 labelText: 'Password',
                 hintText: '*****************',
                 border: OutlineInputBorder(),
@@ -530,10 +556,10 @@ class Regsec extends StatelessWidget {
               height: 5,
             ),
             TextField(
-              controller: _controllerOutlined,
+              controller: _controllerOutlined2,
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.enhanced_encryption),
-                suffixIcon: _ClearButton(controller: _controllerOutlined),
+                suffixIcon: _ClearButton(controller: _controllerOutlined2),
                 labelText: 'Repeat',
                 hintText: '*****************',
                 border: OutlineInputBorder(),
@@ -545,7 +571,11 @@ class Regsec extends StatelessWidget {
             ),
             NesButton(
               type: NesButtonType.primary,
-              onPressed: () {},
+              onPressed: () {
+                setState(() {
+                  Mainpage();
+                });
+              },
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
