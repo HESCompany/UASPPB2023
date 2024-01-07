@@ -1,29 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:nes_ui/nes_ui.dart';
 import 'package:indexed/indexed.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:uuid/uuid.dart';
 
-void main() {
+//styling account button
+//styling dialog
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(MainApp());
 }
 
-class MainApp extends StatelessWidget {
-  MainApp({super.key});
-  ValueNotifier counted = ValueNotifier(0);
+class MainApp extends StatefulWidget {
+  const MainApp({super.key});
+  @override
+  State<MainApp> createState() => MainApp0();
+}
 
-  getdata() async {
-    return 1;
-  }
-
+class MainApp0 extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
         theme: flutterNesTheme(),
-        home: FutureBuilder(
-          future: getdata(),
+        home: StreamBuilder<User?>(
+          stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
-            return Mainpage();
+            if (snapshot.hasData) {
+              return Mainpage();
+            } else {
+              return Authage();
+            }
           },
-        ) //Authgate(),
+        )
+        //Authgate(),
         );
   }
 }
@@ -43,101 +60,35 @@ class Mainpage extends StatefulWidget {
 class Mainpage0 extends State<Mainpage> {
   bool todoisdone = false;
   int selectedIndex = 0;
-  int selectedIndex1 = 0;
+  final colc = FirebaseFirestore.instance
+      .collection('Users')
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .collection('Todos');
+
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  void logout() async {
+    await auth.signOut();
+  }
+
   @override
   Widget build(BuildContext context) {
-    Widget listitem = Padding(
-      padding: const EdgeInsets.all(4),
-      child: NesContainer(
-        padding: EdgeInsets.all(4),
-        backgroundColor: Colors.transparent,
-        child: ListTile(
-          minVerticalPadding: 0,
-          contentPadding: EdgeInsets.all(0),
-          title: Column(children: [
-            ListTile(
-              tileColor: Colors.blue,
-              title: Column(children: [
-                ListTile(
-                  minVerticalPadding: 0,
-                  contentPadding: EdgeInsets.all(0),
-                  textColor: Colors.white,
-                  title: Text("Judul"),
-                ),
-                ListTile(
-                  minVerticalPadding: 0,
-                  tileColor: Colors.cyanAccent,
-                  subtitle: Text("Deskripsi"),
-                )
-              ]),
-            ),
-            ListTile(
-              shape: Border(top: BorderSide(width: 4)),
-              tileColor: Colors.blue,
-              trailing: Checkbox(
-                fillColor: MaterialStateProperty.resolveWith((states) {
-                  if (!states.contains(MaterialState.selected)) {
-                    return Colors.white;
-                  }
-                }),
-                tristate: true,
-                value: todoisdone,
-                onChanged: (value) {
-                  setState(() {
-                    if (value != null) {
-                      todoisdone = value;
-                    } else {
-                      todoisdone = false;
-                    }
-                  });
-                },
-              ),
-              leading: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    style: ButtonStyle(
-                        iconColor: MaterialStateProperty.resolveWith((states) {
-                      return Colors.white;
-                    }), backgroundColor:
-                            MaterialStateProperty.resolveWith((states) {
-                      return Colors.black45;
-                    }), shape: MaterialStateProperty.resolveWith((states) {
-                      return BeveledRectangleBorder();
-                    })),
-                    icon: Icon(Icons.mode_edit),
-                    color: Colors.white,
-                    tooltip: 'Edit',
-                    onPressed: () {},
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
-                    child: IconButton(
-                      style: ButtonStyle(iconColor:
-                          MaterialStateProperty.resolveWith((states) {
-                        return Colors.white;
-                      }), backgroundColor:
-                          MaterialStateProperty.resolveWith((states) {
-                        return Color.fromARGB(255, 155, 0, 0);
-                      }), shape: MaterialStateProperty.resolveWith((states) {
-                        return BeveledRectangleBorder();
-                      })),
-                      icon: Icon(Icons.delete),
-                      color: Colors.white,
-                      tooltip: 'Edit',
-                      onPressed: () {},
-                    ),
-                  )
-                ],
-              ),
-              title: Text("\$5000"),
-            )
-          ]),
-          tileColor: Colors.blue,
-        ),
-      ),
-    );
-
+    Widget section;
+    switch (selectedIndex) {
+      case 0:
+        section = Todosec();
+        break;
+      case 1:
+        section = Emptysec();
+        break;
+      case 2:
+        section = Emptysec();
+        break;
+      case 3:
+        section = Sayasec();
+        break;
+      default:
+        throw UnimplementedError('no widget for $selectedIndex');
+    }
     return Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         appBar: AppBar(
@@ -179,23 +130,31 @@ class Mainpage0 extends State<Mainpage> {
                             child: Column(children: [
                               MenuItemButton(
                                 child: Text('Register'),
-                                onPressed: () {},
+                                onPressed: () {
+                                  logout();
+                                },
                               ),
                               MenuItemButton(
                                 child: Text('Logout'),
-                                onPressed: () {},
+                                onPressed: () {
+                                  logout();
+                                },
                               ),
                             ]),
                           )
                         ],
                       ),
-                      Text("\$5000", style: TextStyle(color: Colors.white)),
+                      Text(
+                          "${FirebaseAuth.instance.currentUser!.email?.split('@').first}",
+                          style: TextStyle(color: Colors.white)),
                     ],
                   )),
             )
           ],
         ),
-        body: ListView(padding: EdgeInsets.all(4), children: [
+        body: section,
+
+        /*ListView(padding: EdgeInsets.all(4), children: [
           listitem,
           listitem,
           listitem,
@@ -205,7 +164,7 @@ class Mainpage0 extends State<Mainpage> {
           SizedBox(
             height: 80,
           ),
-        ]),
+        ]),*/
         floatingActionButton: Column(
           verticalDirection: VerticalDirection.up,
           children: [
@@ -272,9 +231,11 @@ class Mainpage0 extends State<Mainpage> {
                   child: NesButton(
                     type: NesButtonType.success,
                     onPressed: () {
-                      setState(() {
-                        Todoform();
-                      });
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (contain) => Todoform(),
+                          ));
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -292,8 +253,8 @@ class Mainpage0 extends State<Mainpage> {
   }
 }
 
-class _ClearButton extends StatelessWidget {
-  const _ClearButton({required this.controller});
+class ClearField extends StatelessWidget {
+  const ClearField({required this.controller});
 
   final TextEditingController controller;
 
@@ -407,6 +368,244 @@ class Authage0 extends State<Authage> {
   }
 }
 
+class Todosec extends StatefulWidget {
+  const Todosec({super.key});
+  @override
+  State<Todosec> createState() => Todosec0();
+}
+
+class Todosec0 extends State<Todosec> {
+  final colc = FirebaseFirestore.instance
+      .collection('Users')
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .collection('Todos');
+
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  void openDialog(BuildContext context, Todos item) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Yakin mau menghapus ${item.judul}"),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Batal'),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          FilledButton(
+            child: const Text('Yakin !!..'),
+            onPressed: () {
+              colc.doc(item.id).delete();
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void flip(id, bool wesbar) async {
+    try {
+      colc.doc(id).update({'barporung': wesbar});
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    //var appState = context.watch<Authage>();
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: colc.snapshots(),
+      builder: (context, snapshot) {
+        //code
+        if (!snapshot.hasData) {
+          return Center(child: Text("None"));
+        } else {
+          List<Todos> datapool = snapshot.data!.docs.map((document) {
+            return Todos(
+                judul: document['judule'],
+                desc: document['descne'],
+                isdone: document['barporung'],
+                id: document.id);
+          }).toList();
+          if (datapool.length > 0) {
+            return ListView.builder(
+              itemCount: datapool.length,
+              itemBuilder: (context, index) {
+                final datapiece = datapool[index];
+                //card
+                return Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: NesContainer(
+                    padding: EdgeInsets.all(4),
+                    backgroundColor: Colors.transparent,
+                    child: ListTile(
+                      minVerticalPadding: 0,
+                      contentPadding: EdgeInsets.all(0),
+                      title: Column(children: [
+                        ListTile(
+                          tileColor: Colors.blue,
+                          title: Column(children: [
+                            ListTile(
+                              minVerticalPadding: 0,
+                              contentPadding: EdgeInsets.all(0),
+                              textColor: Colors.white,
+                              title: Text(datapiece.judul),
+                            ),
+                            ListTile(
+                              minVerticalPadding: 0,
+                              tileColor: Colors.white,
+                              subtitle: Text(datapiece.desc),
+                            )
+                          ]),
+                        ),
+                        ListTile(
+                          tileColor: Colors.blue,
+                          trailing: Checkbox(
+                            fillColor:
+                                MaterialStateProperty.resolveWith((states) {
+                              if (!states.contains(MaterialState.selected)) {
+                                return Colors.white;
+                              }
+                            }),
+                            tristate: true,
+                            value: datapiece.isdone,
+                            onChanged: (value) {
+                              setState(() {
+                                if (value != null) {
+                                  flip(datapiece.id, value);
+                                } else {
+                                  flip(datapiece.id, false);
+                                }
+                              });
+                            },
+                          ),
+                          leading: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                style: ButtonStyle(iconColor:
+                                    MaterialStateProperty.resolveWith((states) {
+                                  return Colors.white;
+                                }), backgroundColor:
+                                    MaterialStateProperty.resolveWith((states) {
+                                  return Colors.black45;
+                                }), shape:
+                                    MaterialStateProperty.resolveWith((states) {
+                                  return BeveledRectangleBorder();
+                                })),
+                                icon: Icon(Icons.mode_edit),
+                                color: Colors.white,
+                                tooltip: 'Edit',
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (contain) =>
+                                            Todochange(param: datapiece),
+                                      ));
+                                },
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
+                                child: IconButton(
+                                  style: ButtonStyle(iconColor:
+                                      MaterialStateProperty.resolveWith(
+                                          (states) {
+                                    return Colors.white;
+                                  }), backgroundColor:
+                                      MaterialStateProperty.resolveWith(
+                                          (states) {
+                                    return Color.fromARGB(255, 155, 0, 0);
+                                  }), shape: MaterialStateProperty.resolveWith(
+                                      (states) {
+                                    return BeveledRectangleBorder();
+                                  })),
+                                  icon: Icon(Icons.delete),
+                                  color: Colors.white,
+                                  tooltip: 'Hapus',
+                                  onPressed: () {
+                                    openDialog(context, datapiece);
+                                  },
+                                ),
+                              )
+                            ],
+                          ),
+                          title:
+                              datapiece.isdone ? Text("Sudah") : Text("Belum"),
+                        )
+                      ]),
+                      tileColor: Colors.blue,
+                    ),
+                  ),
+                );
+              },
+            );
+          } else {
+            return Center(child: Text("None"));
+          }
+        }
+      },
+    );
+  }
+}
+
+class Emptysec extends StatefulWidget {
+  const Emptysec({super.key});
+  @override
+  State<Emptysec> createState() => Emptysec0();
+}
+
+class Emptysec0 extends State<Emptysec> {
+  @override
+  Widget build(BuildContext context) {
+    //var appState = context.watch<Authage>();
+    return Center(child: Text("None"));
+  }
+}
+
+class Sayasec extends StatefulWidget {
+  const Sayasec({super.key});
+  @override
+  State<Sayasec> createState() => Sayasec0();
+}
+
+class Sayasec0 extends State<Sayasec> {
+  @override
+  Widget build(BuildContext context) {
+    //var appState = context.watch<Authage>();
+    return Container(
+        child: Center(
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Icon(Icons.person,size: 100,),
+            ListTile(
+              title: Center(
+                  child: Text(FirebaseAuth.instance.currentUser!.email.toString(), style: TextStyle(fontSize: 20))),
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            ListTile(
+              title: Center(
+                  child: Text(FirebaseAuth.instance.currentUser!.email.toString().split('@').first, style: TextStyle(fontSize: 20))),
+            ),
+            SizedBox(
+              height: 100,
+            ),
+            ListTile(
+              title: Center(
+                  child: Text("Copyright@A11.2022.14237", style: TextStyle(fontSize: 10)))
+            ),
+            ListTile(
+              title: Center(
+                  child: Text("Heryawan Eko Saputro", style: TextStyle(fontSize: 10)))
+            )
+          ]),
+        ),
+      );
+  }
+}
+
 class Todoform extends StatefulWidget {
   const Todoform({super.key});
   @override
@@ -414,45 +613,44 @@ class Todoform extends StatefulWidget {
 }
 
 class Todoform0 extends State<Todoform> {
-  String status = 'L';
-  bool value0 = false;
-  bool value1 = true;
-  final TextEditingController _controllerOutlined = TextEditingController();
-  final TextEditingController _controllerOutlined1 = TextEditingController();
-  final MaterialStateProperty<Icon?> thumbIcon =
-      MaterialStateProperty.resolveWith<Icon?>((states) {
-    if (states.contains(MaterialState.selected)) {
-      return const Icon(Icons.check);
+  final TextEditingController Judul = TextEditingController();
+  final TextEditingController Descp = TextEditingController();
+  final colc = FirebaseFirestore.instance.collection('Users');
+
+  void Tambah() async {
+    try {
+      final id = colc.doc().id;
+      colc
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('Todos')
+          .doc(id)
+          .set({
+        'judule': Judul.text,
+        'descne': Descp.text,
+        'barporung': false,
+        'idne': id,
+      });
+    } catch (e) {
+      print(e);
     }
-    return const Icon(Icons.close);
-  });
+  }
 
   @override
   Widget build(BuildContext context) {
-    Widget s0con;
-    Widget s1con;
-    Widget section;
-    switch (status) {
-      case 'L':
-        s0con = Icon(Icons.send);
-        s1con = Icon(Icons.person_add);
-        section = Lgnsec();
-        break;
-      case 'R':
-        s0con = Icon(Icons.login);
-        s1con = Icon(Icons.send);
-        section = Regsec();
-        break;
-      default:
-        throw UnimplementedError('no widget for $status');
-    }
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Padding(
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
         child: NesButton(
           type: NesButtonType.primary,
-          onPressed: () {},
+          onPressed: () {
+            Tambah();
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (contain) => MainApp(),
+                ));
+          },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
@@ -471,11 +669,6 @@ class Todoform0 extends State<Todoform> {
         title: Text("Tambah Todo"),
         centerTitle: true,
       ),
-      //
-      //
-      //Separated
-      //
-      //
       body: Container(
         child: Center(
           child: Padding(
@@ -483,10 +676,10 @@ class Todoform0 extends State<Todoform> {
               child: ListView(
                 children: [
                   TextField(
-                    controller: _controllerOutlined,
+                    controller: Judul,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.note_alt),
-                      suffixIcon: _ClearButton(controller: _controllerOutlined),
+                      suffixIcon: ClearField(controller: Judul),
                       labelText: 'Todo Name',
                       hintText: 'Daily Exam',
                       border: OutlineInputBorder(),
@@ -498,14 +691,115 @@ class Todoform0 extends State<Todoform> {
                   ),
                   TextField(
                     maxLines: 10,
-                    controller: _controllerOutlined1,
+                    controller: Descp,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.assignment),
-                      suffixIcon:
-                          _ClearButton(controller: _controllerOutlined1),
+                      suffixIcon: ClearField(controller: Descp),
                       labelText: 'Deskripsi Todo',
                       hintText:
                           'PPB Daily Exam Where Attended online record on Tomorrow Sunday',
+                      border: OutlineInputBorder(),
+                      filled: true,
+                    ),
+                  ),
+                ],
+              )),
+        ),
+      ),
+    );
+  }
+}
+
+class Todochange extends StatefulWidget {
+  Todos param;
+  Todochange({super.key, required this.param});
+  @override
+  State<Todochange> createState() => Todochange0();
+}
+
+class Todochange0 extends State<Todochange> {
+  final colc = FirebaseFirestore.instance
+      .collection('Users')
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .collection('Todos');
+  final TextEditingController Edittitle = TextEditingController();
+  final TextEditingController Editdesc = TextEditingController();
+  void execme() {
+    Edittitle.text = widget.param.judul;
+    Editdesc.text = widget.param.desc;
+  }
+
+  void Save() async {
+    try {
+      if (Edittitle.text != "" && Editdesc.text != "") {
+        colc
+            .doc(widget.param.id)
+            .update({'judule': Edittitle.text, 'descne': Editdesc.text});
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    execme();
+    return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+        child: NesButton(
+          type: NesButtonType.primary,
+          onPressed: () {
+            Save();
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (contain) => MainApp(),
+                ));
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Text(
+                'Simpan',
+                style: TextStyle(fontSize: 15),
+              ),
+            ],
+          ),
+        ),
+      ),
+      appBar: AppBar(
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        title: Text("Edit Todo"),
+        centerTitle: true,
+      ),
+      body: Container(
+        child: Center(
+          child: Padding(
+              padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
+              child: ListView(
+                children: [
+                  TextField(
+                    controller: Edittitle,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.note_alt),
+                      suffixIcon: ClearField(controller: Edittitle),
+                      border: OutlineInputBorder(),
+                      filled: true,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  TextField(
+                    maxLines: 10,
+                    controller: Editdesc,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.assignment),
+                      suffixIcon: ClearField(controller: Editdesc),
                       border: OutlineInputBorder(),
                       filled: true,
                     ),
@@ -525,8 +819,18 @@ class Lgnsec extends StatefulWidget {
 }
 
 class Lgnsec0 extends State<Lgnsec> {
-  final TextEditingController _controllerOutlined = TextEditingController();
-  final TextEditingController _controllerOutlined1 = TextEditingController();
+  final TextEditingController Name = TextEditingController();
+  final TextEditingController Pass = TextEditingController();
+  bool hidetext = true;
+
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  void login() async {
+    await auth.signInWithEmailAndPassword(
+      email: Name.text,
+      password: Pass.text,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     //var appState = context.watch<Authage>();
@@ -535,10 +839,10 @@ class Lgnsec0 extends State<Lgnsec> {
         child: Column(
           children: [
             TextField(
-              controller: _controllerOutlined,
+              controller: Name,
               decoration: InputDecoration(
                 prefixIcon: Icon(Icons.waving_hand),
-                suffixIcon: _ClearButton(controller: _controllerOutlined),
+                suffixIcon: ClearField(controller: Name),
                 labelText: 'Username',
                 hintText: 'Eric',
                 border: OutlineInputBorder(),
@@ -549,12 +853,29 @@ class Lgnsec0 extends State<Lgnsec> {
               height: 5,
             ),
             TextField(
-              controller: _controllerOutlined1,
+              enableInteractiveSelection: false,
+              controller: Pass,
+              obscureText: hidetext,
+              obscuringCharacter: '*',
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.enhanced_encryption),
-                suffixIcon: _ClearButton(controller: _controllerOutlined1),
+                suffixIcon: IconButton(
+                  icon: hidetext
+                      ? const Icon(Icons.visibility_off)
+                      : const Icon(Icons.visibility),
+                  onPressed: () {
+                    setState(() {
+                      if (hidetext) {
+                        hidetext = false;
+                      } else {
+                        hidetext = true;
+                      }
+                    });
+                  },
+                ),
                 labelText: 'Password',
                 hintText: '*****************',
+                hintStyle: TextStyle(overflow: TextOverflow.clip),
                 border: OutlineInputBorder(),
                 filled: true,
               ),
@@ -565,9 +886,7 @@ class Lgnsec0 extends State<Lgnsec> {
             NesButton(
               type: NesButtonType.primary,
               onPressed: () {
-                setState(() {
-                  Mainpage();
-                });
+                login();
               },
               child: Row(
                 mainAxisSize: MainAxisSize.max,
@@ -593,9 +912,23 @@ class Regsec extends StatefulWidget {
 }
 
 class Regsec0 extends State<Regsec> {
-  final TextEditingController _controllerOutlined = TextEditingController();
-  final TextEditingController _controllerOutlined1 = TextEditingController();
-  final TextEditingController _controllerOutlined2 = TextEditingController();
+  final TextEditingController Name = TextEditingController();
+  final TextEditingController Pass = TextEditingController();
+  final TextEditingController Reat = TextEditingController();
+  bool hidetext = true;
+
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  void regist() async {
+    if (Pass.text == Reat.text) {
+      await auth.createUserWithEmailAndPassword(
+          email: Name.text, password: Pass.text);
+      await auth.signInWithEmailAndPassword(
+        email: Name.text,
+        password: Pass.text,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     //var appState = context.watch<Authage>();
@@ -604,10 +937,10 @@ class Regsec0 extends State<Regsec> {
         child: Column(
           children: [
             TextField(
-              controller: _controllerOutlined,
+              controller: Name,
               decoration: InputDecoration(
                 prefixIcon: Icon(Icons.waving_hand),
-                suffixIcon: _ClearButton(controller: _controllerOutlined),
+                suffixIcon: ClearField(controller: Name),
                 labelText: 'Username',
                 hintText: 'Eric',
                 border: OutlineInputBorder(),
@@ -618,12 +951,29 @@ class Regsec0 extends State<Regsec> {
               height: 5,
             ),
             TextField(
-              controller: _controllerOutlined1,
+              controller: Pass,
+              enableInteractiveSelection: false,
+              obscureText: hidetext,
+              obscuringCharacter: '*',
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.lock_open),
-                suffixIcon: _ClearButton(controller: _controllerOutlined1),
+                suffixIcon: IconButton(
+                  icon: hidetext
+                      ? const Icon(Icons.visibility_off)
+                      : const Icon(Icons.visibility),
+                  onPressed: () {
+                    setState(() {
+                      if (hidetext) {
+                        hidetext = false;
+                      } else {
+                        hidetext = true;
+                      }
+                    });
+                  },
+                ),
                 labelText: 'Password',
                 hintText: '*****************',
+                hintStyle: TextStyle(overflow: TextOverflow.clip),
                 border: OutlineInputBorder(),
                 filled: true,
               ),
@@ -632,12 +982,16 @@ class Regsec0 extends State<Regsec> {
               height: 5,
             ),
             TextField(
-              controller: _controllerOutlined2,
+              controller: Reat,
+              enableInteractiveSelection: false,
+              obscureText: hidetext,
+              obscuringCharacter: '*',
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.enhanced_encryption),
-                suffixIcon: _ClearButton(controller: _controllerOutlined2),
+                suffixIcon: ClearField(controller: Reat),
                 labelText: 'Repeat',
                 hintText: '*****************',
+                hintStyle: TextStyle(overflow: TextOverflow.clip),
                 border: OutlineInputBorder(),
                 filled: true,
               ),
@@ -648,9 +1002,7 @@ class Regsec0 extends State<Regsec> {
             NesButton(
               type: NesButtonType.primary,
               onPressed: () {
-                setState(() {
-                  Mainpage();
-                });
+                regist();
               },
               child: Row(
                 mainAxisSize: MainAxisSize.max,
@@ -667,4 +1019,17 @@ class Regsec0 extends State<Regsec> {
           ],
         ));
   }
+}
+
+class Todos {
+  final String judul;
+  final String desc;
+  final bool isdone;
+  final String id;
+
+  Todos(
+      {required this.judul,
+      required this.desc,
+      required this.isdone,
+      required this.id});
 }
